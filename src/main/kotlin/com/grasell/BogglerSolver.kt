@@ -35,6 +35,7 @@ private fun findWords(tiles: Set<Tile>, trie: Trie): Sequence<String> {
             .map { Pair(it, trie.next(it.character)) }
             .filter { it.second != null }
             .flatMap { search(it.first, immutableSetOf(), it.second!!) }
+            .filter { it.length > 1 }
 }
 
 
