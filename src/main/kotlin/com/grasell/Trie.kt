@@ -1,5 +1,9 @@
 package com.grasell
 
+/**
+ * Simple Trie class.  Logic to build the Trie lives outside of the class, but in this file.
+ */
+//TODO: Optimization (minor): Use array instead of map
 class Trie {
 
     private val children = mutableMapOf<Char, Trie>()
@@ -15,6 +19,21 @@ class Trie {
 
 }
 
+/**
+ * Transform a sequence of Strings into a Trie
+ */
+fun buildTrie(input: Sequence<String>): Trie {
+    val root = Trie()
+
+    input.forEach { addSequenceToTrie(it.iterator(), it, root) }
+
+    return root
+}
+
+/**
+ * Adds a single sequence of Chars to a Trie.
+ * If the Trie doesn't exist, create it.
+ */
 fun addSequenceToTrie(seq: Iterator<Char>,
                       fullString: String,
                       maybeNode: Trie?): Trie {
@@ -30,12 +49,4 @@ fun addSequenceToTrie(seq: Iterator<Char>,
     }
 
     return node
-}
-
-fun buildTrie(input: Sequence<String>): Trie {
-    val root = Trie()
-
-    input.forEach { addSequenceToTrie(it.iterator(), it, root) }
-
-    return root
 }

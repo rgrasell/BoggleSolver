@@ -1,5 +1,9 @@
 package com.grasell
 
+/**
+ * Represents one Tile on a Boggle board.
+ * There is no board class.  Use the properties in Tile to create a graph to represent the board.
+ */
 class Tile(val character: Char) {
 
     var up: Tile? = null
@@ -25,6 +29,7 @@ class Tile(val character: Char) {
 fun buildBoard(input: Array<Array<Char>>): Set<Tile> {
     val tileMap = mutableMapOf<Pair<Int, Int>, Tile>()
 
+    //TODO: verbose (but fast and functional)
     input.forEachIndexed { y, xAxis ->
         xAxis.forEachIndexed { x, element ->
             val tile = Tile(element)
