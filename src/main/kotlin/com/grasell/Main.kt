@@ -1,7 +1,6 @@
 package com.grasell
 
 import java.io.File
-import kotlin.system.measureTimeMillis
 
 fun main(args: Array<String>) {
     val trie = buildDictionary("dictionary.txt")
@@ -11,6 +10,7 @@ fun main(args: Array<String>) {
     val tiles = parseSquareBoard(s)
 
     solveBoard(tiles, trie)
+            .distinct()
             .sorted()
             .forEach {
                 println(it)
