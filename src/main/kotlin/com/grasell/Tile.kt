@@ -29,42 +29,55 @@ class Tile(val character: Char) {
 fun buildBoard(input: Array<Array<Char>>): Set<Tile> {
     val tileMap = mutableMapOf<Pair<Int, Int>, Tile>()
 
-    //TODO: verbose (but fast and functional)
+    //TODO: verbose (but fairly fast and functional)
     input.forEachIndexed { y, xAxis ->
         xAxis.forEachIndexed { x, element ->
             val tile = Tile(element)
-            tileMap[Pair(x,y)] = tile
+            tileMap[x to y] = tile
 
-            if(tileMap.containsKey(Pair(x-1,y))){
-                val foreigner = tileMap[Pair(x-1,y)]!!
+            if(tileMap.containsKey(x-1 to y)){
+                val foreigner = tileMap[x-1 to y]!!
                 tile.left = foreigner
                 foreigner.right = tile
             }
 
-            if(tileMap.containsKey(Pair(x-1,y-1))){
-                val foreigner = tileMap[Pair(x-1,y-1)]!!
+            if(tileMap.containsKey(x-1 to y-1)){
+                val foreigner = tileMap[x-1 to y-1]!!
                 tile.upLeft = foreigner
                 foreigner.downRight = tile
             }
 
-            if(tileMap.containsKey(Pair(x,y-1))){
-                val foreigner = tileMap[Pair(x,y-1)]!!
+            if(tileMap.containsKey(x to y-1)){
+                val foreigner = tileMap[x to y-1]!!
                 tile.up = foreigner
                 foreigner.down = tile
             }
 
-            if(tileMap.containsKey(Pair(x-1,y+1))){
-                val foreigner = tileMap[Pair(x-1,y+1)]!!
-                tile.downLeft = foreigner
-                foreigner.upright = tile
+            if(tileMap.containsKey(x+1 to y-1)){
+                val foreigner = tileMap[x+1 to y-1]!!
+                tile.upright = foreigner
+                foreigner.downLeft = tile
             }
-
-            sequenceOf(Pair(x-1,y), Pair(x-1,y-1),Pair(x,y-1))
-                    .map{tileMap[it]}
-                    .filter { it != null }
-                    .forEach {  }
         }
     }
 
     return tileMap.values.toSet()
+}
+
+/**
+ * Parse a String into a square board.
+ * Characters are placed from left to right, top to bottom.
+ */
+fun parseSquareBoard(input: String): Set<Tile> {
+    val dimension = Math.sqrt(input.length.toDouble()).toInt()
+    if (dimension * dimension != input.length) {
+        throw Exception("Not a square board.")
+    }
+
+    val arrayArray = input.asSequence()
+            .batch(dimension)
+            .map { it.toTypedArray() }
+            .toList().toTypedArray()
+
+    return buildBoard(arrayArray)
 }
