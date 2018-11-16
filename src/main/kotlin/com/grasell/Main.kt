@@ -10,12 +10,10 @@ fun main(args: Array<String>) {
     val tiles = parseSquareBoard(s)
 
     solveBoard(tiles, trie)
-            .distinct()
             .sorted()
             .forEach {
                 println(it)
             }
-
 }
 
 private fun buildDictionary(fileName: String): Trie {

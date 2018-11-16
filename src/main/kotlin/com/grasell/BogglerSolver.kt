@@ -14,6 +14,7 @@ fun solveBoard(tiles: Set<Tile>, trie: Trie): Sequence<String> {
             .filter { it.second != null }
             .flatMap { searchOneTile(it.first, immutableSetOf(), it.second!!) }
             .filter { it.length > 1 }
+            .distinct()
 }
 
 /**
