@@ -3,17 +3,20 @@ package com.grasell
 import java.io.File
 
 fun main(args: Array<String>) {
-    val trie = buildDictionary("dictionary.txt")
+    val dictionaryFile = if (args.isNotEmpty()) args[0] else "dictionary.txt"
+    val trie = buildDictionary(dictionaryFile)
 
-    val s = "IYSWLASIZFNGDHNOCOEEEPDRDPAOEBBOQCJIUGEIAIDDWHEGUHYIBURRUASUZDEWEXPAVERUJUDUNZTULTTVCRMTKRMUNIIWDEZZ".toLowerCase()
+    val boardString = if (args.size > 1) {
+        args[1]
+    } else {
+        "IYSWLASIZFNGDHNOCOEEEPDRDPAOEBBOQCJIUGEIAIDDWHEGUHYIBURRUASUZDEWEXPAVERUJUDUNZTULTTVCRMTKRMUNIIWDEZZ"
+    }
 
-    val tiles = parseSquareBoard(s)
+    val tiles = parseSquareBoard(boardString.lowercase())
 
     solveBoard(tiles, trie)
             .sorted()
-            .forEach {
-                println(it)
-            }
+            .forEach { println(it) }
 }
 
 private fun buildDictionary(fileName: String): Trie {
@@ -21,19 +24,7 @@ private fun buildDictionary(fileName: String): Trie {
 
     val rawWords = inputStream.bufferedReader()
             .lineSequence()
-            .map { it.toLowerCase() }
+            .map { it.lowercase() }
 
     return buildTrie(rawWords)
-}
-
-private fun buildSampleBoard(): Set<Tile> {
-    val boardArray =
-            arrayOf(
-                    arrayOf('s', 'e', 'r', 's'),
-                    arrayOf('p', 'a', 't', 'g'),
-                    arrayOf('l', 'i', 'n', 'e'),
-                    arrayOf('s', 'e', 'r', 's')
-            )
-
-    return buildBoard(boardArray)
 }

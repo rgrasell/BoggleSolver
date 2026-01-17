@@ -1,6 +1,8 @@
 package com.grasell
 
-object SequenceExtensions
+/**
+ * Extension functions for Kotlin Sequences.
+ */
 
 inline fun <T, R : Comparable<R>> Sequence<T>.sortedByDirection(
         descending: Boolean,
@@ -26,10 +28,20 @@ fun <T> Sequence<T>.batchWhile(batchSize: Int, predicate: (List<T>) -> Boolean):
 
 private class BatchingSequence<T>(val source: Sequence<T>, val batchSize: Int) : Sequence<List<T>> {
     override fun iterator(): Iterator<List<T>> = object : AbstractIterator<List<T>>() {
-        val iterate = if (batchSize > 0) source.iterator() else emptyList<T>().iterator()
+        val sourceIterator = if (batchSize > 0) source.iterator() else emptyList<T>().iterator()
+        
         override fun computeNext() {
-            if (iterate.hasNext()) setNext(iterate.asSequence().take(batchSize).toList())
-            else done()
+            if (sourceIterator.hasNext()) {
+                val batch = mutableListOf<T>()
+                repeat(batchSize) {
+                    if (sourceIterator.hasNext()) {
+                        batch.add(sourceIterator.next())
+                    }
+                }
+                if (batch.isNotEmpty()) setNext(batch) else done()
+            } else {
+                done()
+            }
         }
     }
 }

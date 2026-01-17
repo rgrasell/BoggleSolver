@@ -2,7 +2,6 @@ package com.grasell
 
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.immutableSetOf
-import java.io.File
 
 /**
  * Recursively search the entire board for words that appear in the dictionary.
@@ -10,9 +9,8 @@ import java.io.File
  */
 fun solveBoard(tiles: Set<Tile>, trie: Trie): Sequence<String> {
     return tiles.asSequence()
-            .map { it to trie.next(it.character) }
-            .filter { it.second != null }
-            .flatMap { searchOneTile(it.first, immutableSetOf(), it.second!!) }
+            .mapNotNull { tile -> trie.next(tile.character)?.let { tile to it } }
+            .flatMap { (tile, trieCursor) -> searchOneTile(tile, immutableSetOf(), trieCursor) }
             .filter { it.length > 1 }
             .distinct()
 }
@@ -24,15 +22,13 @@ fun solveBoard(tiles: Set<Tile>, trie: Trie): Sequence<String> {
  */
 private fun searchOneTile(tile: Tile, visitedTiles: ImmutableSet<Tile>, trieCursor: Trie): Sequence<String> {
     // If the current search path found a word, add it to the output sequence
-    var maybeWord = sequenceOf<String>()
-    if (trieCursor.fullString != null){
-        maybeWord = sequenceOf(trieCursor.fullString!!)
-    }
+    val foundWord = trieCursor.fullString?.let { sequenceOf(it) } ?: emptySequence()
 
     // Recursively search from this tile to each of its neighbors
-    return maybeWord + tile.neighbors()
+    val neighborWords = tile.neighbors()
             .filter { !visitedTiles.contains(it) }
-            .filter { trieCursor.next(it.character) != null }
-            .map { Pair(it, trieCursor.next(it.character)!!) }
+            .mapNotNull { neighbor -> trieCursor.next(neighbor.character)?.let { neighbor to it } }
             .flatMap { (nextTile, nextTrie) -> searchOneTile(nextTile, visitedTiles.add(tile), nextTrie) }
+    
+    return foundWord + neighborWords
 }

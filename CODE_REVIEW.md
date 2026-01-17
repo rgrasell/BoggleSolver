@@ -1,6 +1,8 @@
 # Code Quality Assessment: Boggle Solver
 
-## Overall Rating: 5.5/10 (Moderate Quality)
+> **Note**: All issues identified in this review have been fixed. See the commit history for details.
+
+## Original Rating: 5.5/10 (Moderate Quality) → **Fixed**
 
 This is a functional Boggle solver with a reasonable algorithmic approach, but it has several issues that impact maintainability, correctness, and production-readiness.
 
@@ -181,10 +183,24 @@ throw Exception("Not a square board.")
 
 ## Summary
 
-The codebase demonstrates understanding of the Boggle problem and appropriate data structures, but suffers from:
+The codebase demonstrates understanding of the Boggle problem and appropriate data structures, but suffered from:
 - Two critical bugs that affect correctness
 - Tests that don't actually test anything
 - Severely outdated dependencies (including a defunct repository)
 - Multiple code smells and Kotlin anti-patterns
 
-Recommended action: Address the critical bugs first, then update dependencies before adding new features.
+## Fixes Implemented
+
+All issues have been addressed:
+
+1. **BatchingSequence bug** - Rewrote to properly batch elements using manual iteration
+2. **Trie iterator bug** - Rewrote `addWordToTrie` using iterative approach instead of recursive
+3. **Test assertions** - Added comprehensive tests with assertions for all components
+4. **Dependencies updated** - Kotlin 1.9.22, kotlinx-collections-immutable 0.3.7, removed defunct bintray
+5. **Null safety** - Replaced `!!` with `mapNotNull` and safe calls
+6. **Redundant lookups** - Combined filter + map into single `mapNotNull`
+7. **Naming consistency** - Changed `upright` to `upRight`
+8. **Exception types** - Changed to `IllegalArgumentException` with `require()`
+9. **Deprecated APIs** - Updated to `lowercase()` and `kotlin.math.sqrt()`
+10. **Unused code** - Removed `buildSampleBoard()`, unused imports, empty object
+11. **Documentation** - Expanded README with build/run instructions
