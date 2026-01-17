@@ -1,18 +1,13 @@
 package com.grasell
 
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.immutableSetOf
-import java.io.File
-
 /**
  * Recursively search the entire board for words that appear in the dictionary.
  * Returns as sequence for performance.
  */
 fun solveBoard(tiles: Set<Tile>, trie: Trie): Sequence<String> {
     return tiles.asSequence()
-            .map { it to trie.next(it.character) }
-            .filter { it.second != null }
-            .flatMap { searchOneTile(it.first, immutableSetOf(), it.second!!) }
+            .mapNotNull { tile -> trie.next(tile.character)?.let { tile to it } }
+            .flatMap { (tile, nextTrie) -> searchOneTile(tile, mutableSetOf(), nextTrie) }
             .filter { it.length > 1 }
             .distinct()
 }
@@ -22,17 +17,19 @@ fun solveBoard(tiles: Set<Tile>, trie: Trie): Sequence<String> {
  * This will find all words that begin on the input tile.
  * To solve an entire board, this must be called multiple times.
  */
-private fun searchOneTile(tile: Tile, visitedTiles: ImmutableSet<Tile>, trieCursor: Trie): Sequence<String> {
+private fun searchOneTile(tile: Tile, visitedTiles: MutableSet<Tile>, trieCursor: Trie): Sequence<String> = sequence {
     // If the current search path found a word, add it to the output sequence
-    var maybeWord = sequenceOf<String>()
-    if (trieCursor.fullString != null){
-        maybeWord = sequenceOf(trieCursor.fullString!!)
-    }
+    trieCursor.fullString?.let { yield(it) }
 
     // Recursively search from this tile to each of its neighbors
-    return maybeWord + tile.neighbors()
-            .filter { !visitedTiles.contains(it) }
-            .filter { trieCursor.next(it.character) != null }
-            .map { Pair(it, trieCursor.next(it.character)!!) }
-            .flatMap { (nextTile, nextTrie) -> searchOneTile(nextTile, visitedTiles.add(tile), nextTrie) }
+    visitedTiles.add(tile)
+    for (neighbor in tile.neighbors()) {
+        if (!visitedTiles.contains(neighbor)) {
+            val nextTrie = trieCursor.next(neighbor.character)
+            if (nextTrie != null) {
+                yieldAll(searchOneTile(neighbor, visitedTiles, nextTrie))
+            }
+        }
+    }
+    visitedTiles.remove(tile)
 }

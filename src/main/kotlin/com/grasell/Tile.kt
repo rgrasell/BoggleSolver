@@ -18,8 +18,7 @@ class Tile(val character: Char) {
 
     fun neighbors(): Sequence<Tile> {
         return sequenceOf(up, upright, right, downRight, down, downLeft, left, upLeft)
-                .filter { it != null }
-                .map { it as Tile }
+                .filterNotNull()
     }
 }
 

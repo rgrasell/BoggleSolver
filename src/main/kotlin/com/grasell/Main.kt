@@ -1,11 +1,12 @@
 package com.grasell
 
 import java.io.File
+import java.util.Locale
 
 fun main(args: Array<String>) {
     val trie = buildDictionary("dictionary.txt")
 
-    val s = "IYSWLASIZFNGDHNOCOEEEPDRDPAOEBBOQCJIUGEIAIDDWHEGUHYIBURRUASUZDEWEXPAVERUJUDUNZTULTTVCRMTKRMUNIIWDEZZ".toLowerCase()
+    val s = "IYSWLASIZFNGDHNOCOEEEPDRDPAOEBBOQCJIUGEIAIDDWHEGUHYIBURRUASUZDEWEXPAVERUJUDUNZTULTTVCRMTKRMUNIIWDEZZ".toLowerCase(Locale.ROOT)
 
     val tiles = parseSquareBoard(s)
 
@@ -17,13 +18,9 @@ fun main(args: Array<String>) {
 }
 
 private fun buildDictionary(fileName: String): Trie {
-    val inputStream = File(fileName).inputStream()
-
-    val rawWords = inputStream.bufferedReader()
-            .lineSequence()
-            .map { it.toLowerCase() }
-
-    return buildTrie(rawWords)
+    return File(fileName).bufferedReader().useLines { lines ->
+        buildTrie(lines.map { it.toLowerCase(Locale.ROOT) })
+    }
 }
 
 private fun buildSampleBoard(): Set<Tile> {

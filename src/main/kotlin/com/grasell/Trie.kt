@@ -40,7 +40,7 @@ fun addSequenceToTrie(seq: Iterator<Char>,
 
     val node = maybeNode ?: Trie()
 
-    if (!seq.iterator().hasNext()) {
+    if (!seq.hasNext()) {
         node.fullString = fullString
     } else {
         val nextC = seq.next()
